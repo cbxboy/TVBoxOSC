@@ -22,6 +22,7 @@ import com.github.tvbox.osc.bean.SourceBean;
 import com.github.tvbox.osc.event.RefreshEvent;
 import com.github.tvbox.osc.event.ServerEvent;
 import com.github.tvbox.osc.server.ControlManager;
+import com.github.tvbox.osc.ui.adapter.GridAdapter;
 import com.github.tvbox.osc.ui.adapter.PinyinAdapter;
 import com.github.tvbox.osc.ui.adapter.SearchAdapter;
 import com.github.tvbox.osc.ui.dialog.RemoteDialog;
@@ -37,6 +38,7 @@ import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.AbsCallback;
 import com.lzy.okgo.model.Response;
 import com.owen.tvrecyclerview.widget.TvRecyclerView;
+import com.owen.tvrecyclerview.widget.V7GridLayoutManager;
 import com.owen.tvrecyclerview.widget.V7LinearLayoutManager;
 
 import org.greenrobot.eventbus.EventBus;
@@ -68,6 +70,7 @@ public class SearchActivity extends BaseActivity {
     private SearchAdapter searchAdapter;
     private PinyinAdapter wordAdapter;
     private String searchTitle = "";
+    private GridAdapter gridAdapter;
 
     @Override
     protected int getLayoutResID() {
@@ -103,14 +106,14 @@ public class SearchActivity extends BaseActivity {
             }
         });
         mGridView.setHasFixedSize(true);
-        mGridView.setLayoutManager(new V7LinearLayoutManager(this.mContext, 1, false));
-        searchAdapter = new SearchAdapter();
-        mGridView.setAdapter(searchAdapter);
-        searchAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+        gridAdapter = new GridAdapter();
+        mGridView.setAdapter(gridAdapter);
+        mGridView.setLayoutManager(new V7GridLayoutManager(this.mContext, 3));
+        gridAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 FastClickCheckUtil.check(view);
-                Movie.Video video = searchAdapter.getData().get(position);
+                Movie.Video video = gridAdapter.getData().get(position);
                 if (video != null) {
                     Bundle bundle = new Bundle();
                     bundle.putString("id", video.id);
@@ -271,7 +274,7 @@ public class SearchActivity extends BaseActivity {
         showLoading();
         this.searchTitle = title;
         mGridView.setVisibility(View.INVISIBLE);
-        searchAdapter.setNewData(new ArrayList<>());
+        gridAdapter.setNewData(new ArrayList<>());
         searchResult();
     }
 
@@ -286,7 +289,7 @@ public class SearchActivity extends BaseActivity {
         } catch (Throwable th) {
             th.printStackTrace();
         } finally {
-            searchAdapter.setNewData(new ArrayList<>());
+            gridAdapter.setNewData(new ArrayList<>());
             allRunCount.set(0);
         }
         searchExecutorService = Executors.newFixedThreadPool(5);
@@ -321,18 +324,18 @@ public class SearchActivity extends BaseActivity {
                 if (video.name.contains(searchTitle))
                     data.add(video);
             }
-            if (searchAdapter.getData().size() > 0) {
-                searchAdapter.addData(data);
+            if (gridAdapter.getData().size() > 0) {
+                gridAdapter.addData(data);
             } else {
                 showSuccess();
                 mGridView.setVisibility(View.VISIBLE);
-                searchAdapter.setNewData(data);
+                gridAdapter.setNewData(data);
             }
         }
 
         int count = allRunCount.decrementAndGet();
         if (count <= 0) {
-            if (searchAdapter.getData().size() <= 0) {
+            if (gridAdapter.getData().size() <= 0) {
                 showEmpty();
             }
             cancel();
