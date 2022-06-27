@@ -8,7 +8,6 @@ import android.widget.TextView;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.github.tvbox.osc.R;
-import com.github.tvbox.osc.api.ApiConfig;
 import com.github.tvbox.osc.bean.Movie;
 import com.github.tvbox.osc.picasso.RoundTransformation;
 import com.github.tvbox.osc.util.MD5;
@@ -56,12 +55,6 @@ public class GridAdapter extends BaseQuickAdapter<Movie.Video, BaseViewHolder> {
         } else {
             helper.setVisible(R.id.tvNote, true);
             helper.setText(R.id.tvNote, item.note);
-        }
-        if (TextUtils.isEmpty(item.sourceKey)) {
-            helper.setVisible(R.id.tvSource, false);
-        } else {
-            helper.setVisible(R.id.tvSource, true);
-            helper.setText(R.id.tvSource, ApiConfig.get().getSource(item.sourceKey).getName());
         }
         helper.setText(R.id.tvName, item.name);
         helper.setText(R.id.tvActor, item.actor);
