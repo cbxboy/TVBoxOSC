@@ -113,7 +113,7 @@ public class SearchActivity extends BaseActivity {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 FastClickCheckUtil.check(view);
-                Movie.Video video = gridAdapter.getData().get(position);
+                Movie.Video video = searchAdapter.getData().get(position);
                 if (video != null) {
                     Bundle bundle = new Bundle();
                     bundle.putString("id", video.id);
@@ -301,7 +301,7 @@ public class SearchActivity extends BaseActivity {
 
         ArrayList<String> siteKey = new ArrayList<>();
         for (SourceBean bean : searchRequestList) {
-            if (!bean.isActive()) {
+            if (!bean.isSearchable()) {
                 continue;
             }
             siteKey.add(bean.getKey());
@@ -350,6 +350,13 @@ public class SearchActivity extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         cancel();
+        try {
+            if (searchExecutorService != null) {
+                searchExecutorService.shutdownNow();
+            }
+        } catch (Throwable th) {
+            th.printStackTrace();
+        }
         EventBus.getDefault().unregister(this);
     }
 }
